@@ -60,7 +60,7 @@ const SessionCard = ({ session }: { session: Session }) => {
           >
             <motion.div layout="position">
               <div className="flex items-center gap-4 md:gap-8">
-                <div className="max-w-[175px] inline-flex gap-1.5 items-center text-sm text-zinc-400">
+                <div className="max-w-[175px] inline-flex gap-1.5 items-center text-xs sm:text-sm text-zinc-400">
                   <span>{session.startTime}</span>
                   <ArrowRight className="size-4 hidden md:inline" />
                   <span className="hidden md:inline">{session.endTime}</span>
@@ -69,7 +69,9 @@ const SessionCard = ({ session }: { session: Session }) => {
                   <Badge variant="secondary">{session.project}</Badge>
                 </div>
                 <div className="max-w-[150px] inline-flex items-center">
-                  <span className="font-medium">{session.name}</span>
+                  <span className="font-medium sm:text-base text-sm">
+                    {session.name}
+                  </span>
                 </div>
                 <button
                   onClick={() => setOpen(!open)}
