@@ -27,17 +27,19 @@ export default function Home() {
         </Button>
 
         <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter">
-          A sandbox of UI experiments.
+          My sandbox for UI experiments.
         </h1>
         <h2 className="text-xl md:text-3xl tracking-tight text-zinc-400">
           Things may be broken - proceed with optimism.
         </h2>
       </div>
       <div className="flex flex-col gap-6">
-        <h2 className="inline-flex gap-1.5 font-mono text-lg tracking-tighter">
+        <h2 className="inline-flex items-center gap-1.5 font-mono text-base md:text-lg tracking-tighter">
           <FlaskConical />
-          <span className="font-semibold">Experiment 01:</span> Expanding
-          session details
+          <span className="font-semibold">
+            <span className="hidden sm:inline">Experiment</span> 01 /
+          </span>{' '}
+          Expanding session details
         </h2>
         <SessionDetails />
       </div>

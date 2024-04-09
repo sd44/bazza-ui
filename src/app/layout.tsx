@@ -20,7 +20,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className} ${GeistMono.variable}`}
     >
-      <body className="p-12 max-w-screen-lg mx-auto">{children}</body>
+      <body className="p-4 md:p-12 max-w-screen-lg mx-auto">{children}</body>
     </html>
   )
 }

@@ -27,7 +27,7 @@ const data: Session = {
 
 export default function SessionDetails() {
   return (
-    <div className="border border-accent rounded-3xl h-[500px] shadow-sm p-8 flex flex-col justify-center">
+    <div className="border border-accent rounded-3xl h-[750px] md:h-[500px] shadow-sm p-8 flex flex-col justify-center">
       <SessionCard session={data} />
     </div>
   )
