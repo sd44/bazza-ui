@@ -52,14 +52,14 @@ const SessionCard = ({ session }: { session: Session }) => {
       >
         <div
           ref={ref}
-          className="p-8"
+          className="p-6 md:p-8"
         >
           <AnimatePresence
             initial={false}
             mode="sync"
           >
             <motion.div layout="position">
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-4 md:gap-8">
                 <div className="max-w-[175px] inline-flex gap-1.5 items-center text-sm text-zinc-400">
                   <span>{session.startTime}</span>
                   <ArrowRight className="size-4 hidden md:inline" />
@@ -102,10 +102,8 @@ const SessionCard = ({ session }: { session: Session }) => {
                   },
                 }}
               >
-                <ul className="list-outside *:list-disc space-y-1">
-                  <li>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-                  </li>
+                <ul className="list-inside *:list-disc space-y-1">
+                  <li>Lorem ipsum dolor sit amet.</li>
                   <li>Aliquam tincidunt mauris eu risus.</li>
                   <li>Vestibulum auctor dapibus neque.</li>
                   <li>Nunc dignissim risus id metus.</li>
