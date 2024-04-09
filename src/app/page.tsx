@@ -4,6 +4,7 @@ import bazzadev from '@/../public/bazzadev.png'
 import { FlaskConical, Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import SessionDetailsMobile from '@/experiments/logbook/session-details-v2'
 
 export default function Home() {
   return (
@@ -42,6 +43,16 @@ export default function Home() {
           Expanding session details
         </h2>
         <SessionDetails />
+      </div>
+      <div className="flex flex-col gap-6">
+        <h2 className="inline-flex items-center gap-1.5 font-mono text-base md:text-lg tracking-tighter">
+          <FlaskConical />
+          <span className="font-semibold">
+            <span className="hidden sm:inline">Experiment</span> 02 /
+          </span>{' '}
+          Making it <strong>better</strong> on mobile
+        </h2>
+        <SessionDetailsMobile />
       </div>
     </main>
   )
