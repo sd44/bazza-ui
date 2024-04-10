@@ -35,7 +35,7 @@ const data: Session = {
 
 export default function SessionDetailsMobile() {
   return (
-    <div className="border border-accent rounded-3xl h-[80vh] md:h-[500px] shadow-sm p-8 flex flex-col justify-center">
+    <div className="border border-accent rounded-3xl h-[300px] shadow-sm p-8 flex flex-col justify-center">
       <SessionCardV2 session={data} />
     </div>
   )
