@@ -60,6 +60,7 @@ const SessionCardV2 = ({ session }: { session: Session }) => {
     <Drawer
       open={open}
       onOpenChange={setOpen}
+      shouldScaleBackground
     >
       <DrawerTrigger asChild>
         <div className="rounded-2xl w-full p-4 shadow-zinc-100 shadow-sm">
