@@ -1,8 +1,18 @@
 'use client'
 
 import { ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import { useState } from 'react'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
 type Session = {
@@ -33,28 +43,10 @@ const data: Session = {
   ),
 }
 
-export default function SessionDetailsMobileV2() {
-  return (
-    <div className="border border-accent rounded-3xl h-[500px] shadow-sm p-8 flex flex-col justify-center">
-      <SessionCardV2 session={data} />
-    </div>
-  )
-}
-
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer'
-import { Button } from '@/components/ui/button'
-
-const SessionCardV2 = ({ session }: { session: Session }) => {
+export const V3 = () => {
   const [open, setOpen] = useState<boolean>(false)
+
+  const session = data
 
   return (
     <Drawer

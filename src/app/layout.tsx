@@ -20,15 +20,8 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className} ${GeistMono.variable}`}
     >
-      <body className="bg-background">
-        <div
-          vaul-drawer-wrapper=""
-          className="min-h-screen w-full bg-background"
-        >
-          <div className="bg-background p-4 md:p-12 max-w-screen-lg mx-auto">
-            {children}
-          </div>
-        </div>
+      <body className="p-4 max-w-screen-xl mx-auto bg-zinc-100/50">
+        {children}
       </body>
     </html>
   )
