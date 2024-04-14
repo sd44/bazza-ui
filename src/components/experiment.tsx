@@ -10,7 +10,7 @@ export default function Experiment({
 }) {
   const { title, description, tags, prototypes } = experiment
   return (
-    <div className="flex flex-col lg:flex-row lg:justify-between lg:gap-12 xl:gap-24">
+    <div className="flex flex-col lg:flex-row lg:justify-between gap-6 lg:gap-12 xl:gap-24">
       <div className="lg:max-w-[250px] space-y-4">
         <h2 className="font-semibold text-lg font-mono tracking-tighter">
           {title}

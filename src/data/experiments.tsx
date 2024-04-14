@@ -9,6 +9,7 @@ export type TExperiment = {
 
 export type TPrototype = {
   component: React.ReactNode
+  description: string
 }
 
 export const experimentsData: TExperiment[] = [
@@ -19,6 +20,11 @@ export const experimentsData: TExperiment[] = [
     prototypes: [
       {
         component: <WorkSessionCard.V1 />,
+        description: 'Initial design & animation for desktop',
+      },
+      {
+        component: <WorkSessionCard.V2 />,
+        description: 'An idea for "expanding" on mobile',
       },
     ],
   },

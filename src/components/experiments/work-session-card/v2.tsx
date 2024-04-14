@@ -48,7 +48,9 @@ export const V2 = () => {
           <motion.div
             key="normal"
             onClick={() => setOpen(!open)}
-            className="rounded-3xl w-full p-8 shadow-zinc-100 shadow-sm"
+            className="bg-background rounded-3xl w-full p-8 shadow-zinc-100 shadow-sm"
+            layout
+            layoutRoot
           >
             <div className="flex items-center gap-4 md:gap-8">
               <motion.div
@@ -96,6 +98,8 @@ export const V2 = () => {
             onClick={() => setOpen(!open)}
             className="min-h-[100vh] w-[100vw] fixed top-0 left-0 z-50 bg-background transition-none duration-0"
             initial={{ opacity: 0, filter: 'blur(5px)' }}
+            layout
+            layoutRoot
             animate={{
               opacity: 1,
               filter: 'blur(0px)',
