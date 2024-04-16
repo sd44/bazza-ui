@@ -30,7 +30,10 @@ export default function RootLayout({
         )}
       >
         <div vaul-drawer-wrapper="">
-          <div className="relative flex min-h-screen flex-col bg-zinc-50">
+          <div
+            style={{ height: '100% !important' }}
+            className="relative flex min-h-screen flex-col bg-zinc-50"
+          >
             {children}
             <BreakpointVisualizer />
           </div>
