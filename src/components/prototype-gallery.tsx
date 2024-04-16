@@ -38,8 +38,7 @@ export default function PrototypeGallery({ prototypes }: Props) {
   return (
     <div className="flex flex-col gap-2 w-full h-full">
       <div className="h-full">
-        <div className="p-4 relative flex flex-col shadow-sm rounded-3xl">
-          <div className="-z-50 absolute inset-0 bg-graph-paper opacity-[.05]" />
+        <div className="p-4 relative flex flex-col shadow-sm rounded-3xl bg-graph">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-mono font-medium tracking-tighter">
               <div className="flex flex-col lg:flex-row gap-2.5 lg:items-center text-zinc-700">
