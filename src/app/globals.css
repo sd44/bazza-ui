@@ -66,6 +66,20 @@
   }
 }
 
+body,
+main {
+  min-height: -webkit-fill-available;
+}
+
+html {
+  background: black;
+  height: -webkit-fill-available;
+}
+
+main {
+  background: white;
+}
+
 @layer base {
   * {
     @apply border-border;

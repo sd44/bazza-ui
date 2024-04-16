@@ -84,38 +84,36 @@ export const V3 = () => {
         </div>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="flex flex-col rounded-t-[10px] w-full p-4">
-          <DrawerHeader className="gap-4">
-            <DrawerTitle className="text-left">{session.name}</DrawerTitle>
-            <DrawerDescription
-              asChild
-              className="flex flex-col gap-2"
-            >
-              <div>
-                <div className="inline-flex gap-1.5 items-center text-sm">
-                  <span>{session.startTime}</span>
-                  <ArrowRight className="size-4" />
-                  <span>{session.endTime}</span>
-                </div>
-                <div className="inline-flex">
-                  <Badge variant="secondary">{session.project}</Badge>
-                </div>
+        <DrawerHeader className="gap-4">
+          <DrawerTitle className="text-left">{session.name}</DrawerTitle>
+          <DrawerDescription
+            asChild
+            className="flex flex-col gap-2"
+          >
+            <div>
+              <div className="inline-flex gap-1.5 items-center text-sm">
+                <span>{session.startTime}</span>
+                <ArrowRight className="size-4" />
+                <span>{session.endTime}</span>
               </div>
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="p-4">{session.notes}</div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button
-                variant="outline"
-                className="inline-flex gap-1.5 w-full"
-              >
-                <span>Close</span>
-                <EyeOff className="size-4" />
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </div>
+              <div className="inline-flex">
+                <Badge variant="secondary">{session.project}</Badge>
+              </div>
+            </div>
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="p-4">{session.notes}</div>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button
+              variant="outline"
+              className="inline-flex gap-1.5 w-full"
+            >
+              <span>Close</span>
+              <EyeOff className="size-4" />
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )
