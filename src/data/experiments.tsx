@@ -1,3 +1,4 @@
+import Page from '@/app/page'
 import * as WorkSessionCard from '@/components/experiments/work-session-card'
 
 export type TExperiment = {
@@ -25,6 +26,10 @@ export const experimentsData: TExperiment[] = [
       {
         component: <WorkSessionCard.V2 />,
         description: 'An idea for "expanding" on mobile',
+      },
+      {
+        component: <WorkSessionCard.V3 />,
+        description: 'Using Vaul for mobile?',
       },
     ],
   },

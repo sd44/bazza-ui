@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 
 export default function Page() {
   return (
-    <>
+    <div className="p-4 py-10 max-w-screen-xl w-full mx-auto flex flex-col flex-1 gap-12 sm:gap-36">
       <div className="flex flex-col gap-12">
         <Header />
         <Title />
@@ -19,7 +19,7 @@ export default function Page() {
         <Experiments />
       </div>
       <Footer />
-    </>
+    </div>
   )
 }
 
@@ -42,7 +42,7 @@ const Header = () => (
       <Image
         src={bazzadev}
         alt="BazzaDEV"
-        className="size-16"
+        className="size-8 sm:size-16"
       />
     </Link>
     <div className="flex gap-2">

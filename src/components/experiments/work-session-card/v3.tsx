@@ -55,7 +55,7 @@ export const V3 = () => {
       shouldScaleBackground
     >
       <DrawerTrigger asChild>
-        <div className="rounded-2xl w-full p-4 shadow-zinc-100 shadow-sm">
+        <div className="rounded-2xl w-full p-4 shadow-zinc-100 shadow-sm bg-background">
           <div className="flex items-center gap-4">
             <div className="max-w-[175px] inline-flex gap-1.5 items-center text-xs sm:text-sm text-zinc-400">
               <span>{session.startTime}</span>
