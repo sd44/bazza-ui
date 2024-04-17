@@ -7,13 +7,17 @@ import bazzadev from '@/../public/bazzadev.png'
 import { experimentsData } from '@/data/experiments'
 import Experiment from '@/components/experiment'
 import { Separator } from '@/components/ui/separator'
+import Keywords from './keywords'
+import Subtitle from './subtitle'
 
 export default function Page() {
   return (
-    <div className="p-4 py-10 max-w-screen-xl w-full mx-auto flex flex-col flex-1 gap-12 sm:gap-36">
-      <div className="flex flex-col gap-12">
+    <div className="p-4 py-10 max-w-screen-xl w-full mx-auto flex flex-col flex-1 gap-36">
+      <div className="flex flex-col gap-16">
         <Header />
-        <Title />
+        <div className="text-4xl sm:text-5xl md:text-6xl min-h-24 text-center font-semibold tracking-tighter bg-gradient-to-t from-zinc-800 to-zinc-900 bg-clip-text text-transparent">
+          A collection of UI/UX experiments.
+        </div>
       </div>
       <div className="flex-1">
         <Experiments />
@@ -38,13 +42,19 @@ const Experiments = () => {
 
 const Header = () => (
   <header className="flex justify-between items-center">
-    <Link href="https://bazza.dev">
-      <Image
-        src={bazzadev}
-        alt="BazzaDEV"
-        className="size-8 sm:size-16"
-      />
-    </Link>
+    <div className="inline-flex items-center gap-2">
+      <Link href="https://bazza.dev">
+        <Image
+          src={bazzadev}
+          alt="BazzaDEV"
+          className="size-8 md:size-12"
+        />
+      </Link>
+      <h1 className="text-2xl font-semibold tracking-tighter">ui labs.</h1>
+    </div>
+    <div className="hidden sm:inline">
+      <Keywords />
+    </div>
     <div className="flex gap-2">
       <Button
         asChild
@@ -53,7 +63,7 @@ const Header = () => (
       >
         <Link href="https://bazza.dev">
           <ChevronRight className="-ml-1 size-5" />
-          <span className="font-mono">curl bazza.dev</span>
+          <span className="font-mono hidden md:inline">curl bazza.dev</span>
         </Link>
       </Button>
 
@@ -63,7 +73,7 @@ const Header = () => (
       >
         <Link href="https://github.com/bazzadev/ui">
           <Github className="size-5" />
-          <span className="font-mono">bazzadev/ui</span>
+          <span className="font-mono hidden md:inline">bazzadev/ui</span>
         </Link>
       </Button>
     </div>
@@ -83,10 +93,4 @@ const Footer = () => (
       </Link>
     </span>
   </footer>
-)
-
-const Title = () => (
-  <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter">
-    My sandbox for UI experiments.
-  </h1>
 )
