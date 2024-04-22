@@ -32,6 +32,10 @@ export const experimentsData: TExperiment[] = [
         component: <WorkSessionCard.V3 />,
         description: 'Using Vaul for mobile?',
       },
+      {
+        component: <WorkSessionCard.V4 />,
+        description: 'Finishing touches for desktop',
+      },
     ],
   },
 ]
