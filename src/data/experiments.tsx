@@ -1,4 +1,5 @@
 import * as WorkSessionCard from '@/components/experiments/work-session-card'
+import * as MultiSelectTags from '@/components/experiments/multi-select-tags'
 
 export type TExperiment = {
   title: string
@@ -35,6 +36,18 @@ export const experimentsData: TExperiment[] = [
       {
         component: <WorkSessionCard.V4 />,
         description: 'Finishing touches for desktop',
+      },
+    ],
+  },
+  {
+    title: 'Multi-select tags',
+    description: `Select multiple tags from a list, or create a new tag.`,
+    tags: ['react', 'tailwindcss', 'next.js', 'shadcn/ui'],
+    status: 'WIP',
+    prototypes: [
+      {
+        component: <MultiSelectTags.V1 />,
+        description: 'Initial behaviour for adding/removing tags',
       },
     ],
   },
