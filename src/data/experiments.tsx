@@ -49,6 +49,18 @@ export const experimentsData: TExperiment[] = [
         component: <MultiSelectTags.V1 />,
         description: 'Initial behaviour for adding/removing tags',
       },
+      {
+        component: <MultiSelectTags.V2 />,
+        description: 'Create a new tag, too!',
+      },
+      {
+        component: <MultiSelectTags.V3 />,
+        description: 'Handling async tag creation',
+      },
+      {
+        component: <MultiSelectTags.V4 />,
+        description: 'Remove async creation, make controlled',
+      },
     ],
   },
 ]

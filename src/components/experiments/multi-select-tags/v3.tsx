@@ -10,20 +10,23 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { X } from 'lucide-react'
+import { LoaderCircle, Tag, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { nanoid } from 'nanoid'
+import { sleep } from '@/lib/utils'
 
 const initialTags: MultiSelectOption[] = [
-  { label: 'Food/Drink', value: 0 },
-  { label: 'Groceries', value: 1 },
-  { label: 'Transportation', value: 2 },
+  { label: 'Food/Drink', value: nanoid(6) },
+  { label: 'Groceries', value: nanoid(6) },
+  { label: 'Transportation', value: nanoid(6) },
 ]
 
-export default function V2() {
+export default function V3() {
   const [tags, setTags] = useState(initialTags)
 
-  function createTag({ label }: { label: string }) {
-    const newTag = { label: label, value: tags.length }
+  async function createTagAsync({ label }: { label: string }) {
+    await sleep(2000)
+    const newTag = { label: label, value: nanoid(6) }
     setTags((prev) => [...prev, newTag])
 
     return newTag
@@ -33,7 +36,7 @@ export default function V2() {
     <div>
       <MultiSelect
         options={tags}
-        createOption={createTag}
+        createOption={createTagAsync}
       />
     </div>
   )
@@ -55,6 +58,7 @@ interface MultiSelectProps {
 
 function MultiSelect({ options = [], createOption }: MultiSelectProps) {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputValue, setInputValue] = useState('')
   const [selected, setSelected] = useState<MultiSelectOption[]>([])
@@ -73,14 +77,20 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
       if (input) {
         if (
           createOption &&
-          selectables.length === 0 &&
           e.key === 'Enter' &&
-          input.value.trim().length > 0
+          input.value.trim().length > 0 &&
+          !options.find((o) => o.label === input.value.trim())
         ) {
+          e.preventDefault()
           // Add a new tag
+          setLoading(true)
           const newTag = await createOption({ label: input.value })
+          setLoading(false)
+
           setSelected((prev) => [...prev, newTag])
           setInputValue('')
+
+          setTimeout(() => input.focus(), 1)
         }
 
         if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -98,7 +108,7 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
         }
       }
     },
-    [createOption, selectables],
+    [createOption, options],
   )
 
   console.log('options:', options)
@@ -129,6 +139,7 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
           <CommandPrimitive.Input
             ref={inputRef}
             value={inputValue}
+            disabled={loading}
             onValueChange={setInputValue}
             onBlur={() => setOpen(false)}
             onFocus={() => setOpen(true)}
@@ -142,32 +153,55 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
           <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
             <CommandList>
               <CommandEmpty>
-                {inputValue.trim().length > 0 ? (
+                {loading ? (
+                  <span className="text-muted-foreground inline-flex items-center gap-1">
+                    <LoaderCircle className="h-4 w-4 animate-spin" /> Creating
+                    tag...
+                  </span>
+                ) : inputValue.trim().length > 0 &&
+                  !options.find((o) => o.label === inputValue.trim()) ? (
                   <span className="text-muted-foreground">
                     Create a new tag:{' '}
                     <span className="text-primary">{inputValue}</span>
                   </span>
                 ) : (
-                  'No results found.'
+                  <span> No results found.</span>
                 )}
               </CommandEmpty>
               <CommandGroup className="h-full overflow-auto">
-                {selectables.map((s) => (
-                  <CommandItem
-                    key={s.value}
-                    value={s.label}
-                    onMouseDown={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
-                    onSelect={() => {
-                      setInputValue('')
-                      setSelected((prev) => [...prev, s])
-                    }}
-                  >
-                    {s.label}
-                  </CommandItem>
-                ))}
+                {!loading &&
+                  selectables.map((s) => (
+                    <CommandItem
+                      key={s.value}
+                      value={s.label}
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }}
+                      onSelect={() => {
+                        setInputValue('')
+                        setSelected((prev) => [...prev, s])
+                      }}
+                    >
+                      {s.label}
+                    </CommandItem>
+                  ))}
+                {loading ? (
+                  <span className="text-muted-foreground inline-flex items-center gap-1">
+                    <LoaderCircle className="h-4 w-4 animate-spin" /> Creating
+                    tag...
+                  </span>
+                ) : (
+                  inputValue.trim().length > 0 &&
+                  !options.find((o) => o.label === inputValue.trim()) && (
+                    <div className="flex justify-center">
+                      <span className="text-muted-foreground">
+                        Create a new tag:{' '}
+                        <span className="text-primary">{inputValue}</span>
+                      </span>
+                    </div>
+                  )
+                )}
               </CommandGroup>
             </CommandList>
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Command as CommandPrimitive } from 'cmdk'
 import {
@@ -12,80 +12,80 @@ import {
 } from '@/components/ui/command'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { nanoid } from 'nanoid'
+import { cn } from '@/lib/utils'
 
 const initialTags: MultiSelectOption[] = [
-  { label: 'Food/Drink', value: 0 },
-  { label: 'Groceries', value: 1 },
-  { label: 'Transportation', value: 2 },
+  { label: 'Food/Drink', id: nanoid(6) },
+  {
+    label: 'Groceries',
+    id: nanoid(6),
+  },
+  { label: 'Transportation', id: nanoid(6) },
 ]
 
-export default function V2() {
-  const [tags, setTags] = useState(initialTags)
-
-  function createTag({ label }: { label: string }) {
-    const newTag = { label: label, value: tags.length }
-    setTags((prev) => [...prev, newTag])
-
-    return newTag
-  }
+export default function V4() {
+  const [selectedTags, setSelectedTags] = useState<MultiSelectOption[]>([])
 
   return (
     <div>
       <MultiSelect
-        options={tags}
-        createOption={createTag}
+        options={initialTags}
+        value={selectedTags}
+        setValue={setSelectedTags}
       />
     </div>
   )
 }
 
 interface MultiSelectOption {
-  value: string | number
+  id?: string | number
   label: string
 }
 
 interface MultiSelectProps {
   options?: MultiSelectOption[]
-  createOption?: ({
-    label,
-  }: Pick<MultiSelectOption, 'label'>) =>
-    | Promise<MultiSelectOption>
-    | MultiSelectOption
+  value: MultiSelectOption[]
+  setValue: Dispatch<SetStateAction<MultiSelectOption[]>>
 }
 
-function MultiSelect({ options = [], createOption }: MultiSelectProps) {
+function MultiSelect({ options = [], value, setValue }: MultiSelectProps) {
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputValue, setInputValue] = useState('')
-  const [selected, setSelected] = useState<MultiSelectOption[]>([])
+
+  const searchInput =
+    inputValue.trim().length > 0 ? inputValue.trim() : undefined
+
+  const searchMatchesExistingOption = Boolean(
+    options.find((o) => o.label === searchInput) ||
+      value.find((s) => s.label === searchInput),
+  )
 
   const selectables = options.filter(
-    (o) => !selected.some((s) => s.value === o.value),
+    (o) => !value.some((v) => v.label === o.label),
   )
 
   function handleUnselect(option: MultiSelectOption) {
-    setSelected((prev) => prev.filter((p) => p.value !== option.value))
+    setValue((prev) => prev.filter((p) => p.label !== option.label))
   }
 
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current
       if (input) {
-        if (
-          createOption &&
-          selectables.length === 0 &&
-          e.key === 'Enter' &&
-          input.value.trim().length > 0
-        ) {
-          // Add a new tag
-          const newTag = await createOption({ label: input.value })
-          setSelected((prev) => [...prev, newTag])
+        if (e.key === 'Enter' && searchInput && !searchMatchesExistingOption) {
+          e.preventDefault()
+
+          setValue((prev) => [...prev, { label: searchInput }])
           setInputValue('')
+
+          setTimeout(() => input.focus(), 1)
         }
 
         if (e.key === 'Delete' || e.key === 'Backspace') {
           if (input.value === '') {
-            setSelected((prev) => {
+            setValue((prev) => {
               const newSelected = [...prev]
               newSelected.pop()
               return newSelected
@@ -98,12 +98,15 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
         }
       }
     },
-    [createOption, selectables],
+    [setValue, searchInput, searchMatchesExistingOption],
   )
 
   console.log('options:', options)
-  console.log('selected:', selected)
+  console.log('value:', value)
   console.log('selectables:', selectables)
+  console.log('searchInput:', searchInput)
+  console.log('searchMatchesExistingOption:', searchMatchesExistingOption)
+  console.log('=======================================')
 
   return (
     <Command
@@ -112,17 +115,18 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
     >
       <div className="bg-background border border-input rounded-md px-3 py-2 w-[400px] text-sm">
         <div className="flex gap-1 flex-wrap">
-          {selected.map((s) => (
+          {value.map((v) => (
             <Badge
-              key={s.value}
-              className="inline-flex gap-1 hover:"
+              variant="secondary"
+              key={v.label}
+              className={cn('inline-flex gap-1 select-none')}
             >
-              {s.label}
+              {v.label}
               <Button
-                className="h-fit p-0.5 rounded-full"
-                onClick={() => handleUnselect(s)}
+                className="h-fit p-0.5 rounded-full bg-transparent hover:bg-transparent"
+                onClick={() => handleUnselect(v)}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3 text-primary" />
               </Button>
             </Badge>
           ))}
@@ -141,20 +145,15 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
         {open && (
           <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
             <CommandList>
-              <CommandEmpty>
-                {inputValue.trim().length > 0 ? (
-                  <span className="text-muted-foreground">
-                    Create a new tag:{' '}
-                    <span className="text-primary">{inputValue}</span>
-                  </span>
-                ) : (
-                  'No results found.'
-                )}
-              </CommandEmpty>
+              {(!searchInput || searchMatchesExistingOption) && (
+                <CommandEmpty>
+                  <span>No results found.</span>
+                </CommandEmpty>
+              )}
               <CommandGroup className="h-full overflow-auto">
                 {selectables.map((s) => (
                   <CommandItem
-                    key={s.value}
+                    key={s.label}
                     value={s.label}
                     onMouseDown={(e) => {
                       e.preventDefault()
@@ -162,13 +161,25 @@ function MultiSelect({ options = [], createOption }: MultiSelectProps) {
                     }}
                     onSelect={() => {
                       setInputValue('')
-                      setSelected((prev) => [...prev, s])
+                      setValue((prev) => [...prev, s])
                     }}
                   >
                     {s.label}
                   </CommandItem>
                 ))}
               </CommandGroup>
+              {searchInput && !searchMatchesExistingOption && (
+                <CommandGroup>
+                  <CommandItem value={searchInput}>
+                    <span className="inline-flex items-center gap-2">
+                      Create a new tag:
+                      <Badge className={cn('inline-flex gap-1 select-none')}>
+                        {searchInput}
+                      </Badge>
+                    </span>
+                  </CommandItem>
+                </CommandGroup>
+              )}
             </CommandList>
           </div>
         )}
