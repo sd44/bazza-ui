@@ -3,6 +3,7 @@ import './globals.css'
 import { ThemeProvider } from '@/providers/theme-provider'
 import type { Viewport } from 'next'
 import { berkeleyMono, inter } from '@/lib/fonts'
+import OneDollarStatsScript from '@/app/stats'
 
 export const metadata: Metadata = {
   title: 'Data table filters | bazza/ui',
@@ -24,6 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
+      <OneDollarStatsScript />
       <body
         className={`${inter.variable} ${berkeleyMono.variable} font-sans antialiased bg-neutral-50/25 dark:bg-neutral-950 h-screen w-screen`}
       >
