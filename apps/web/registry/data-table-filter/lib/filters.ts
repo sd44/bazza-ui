@@ -1,6 +1,5 @@
 import '@tanstack/table-core'
-import { type RankingInfo, rankItem } from '@tanstack/match-sorter-utils'
-import type { Column, FilterFn, Row, RowData } from '@tanstack/react-table'
+import type { Column, Row, RowData } from '@tanstack/react-table'
 import {
   endOfDay,
   isAfter,
@@ -17,9 +16,6 @@ export type ElementType<T> = T extends (infer U)[] ? U : T
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
-    // _inferData?: TData
-    // _inferValue?: TValue
-
     /* The display name of the column. */
     displayName: string
 
@@ -71,33 +67,15 @@ export function defineMeta<
   return meta
 }
 
-declare module '@tanstack/table-core' {
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>
-  }
-
-  interface FilterMeta {
-    itemRank: RankingInfo
-  }
-}
-
-export const fuzzyFilter: FilterFn<unknown> = (
-  row,
-  columnId,
-  value,
-  addMeta,
-) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  })
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed
-}
+// declare module '@tanstack/table-core' {
+//   interface FilterFns {
+//     fuzzy: FilterFn<unknown>
+//   }
+//
+//   interface FilterMeta {
+//     itemRank: RankingInfo
+//   }
+// }
 
 /*
  * Represents a possible value for a column property of type 'option' or 'multiOption'.

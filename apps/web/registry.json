@@ -10,7 +10,6 @@
       "author": "Kian Bazarjani <kian@bazza.dev>",
       "type": "registry:block",
       "dependencies": [
-        "@tanstack/match-sorter-utils@8.19.4",
         "@tanstack/react-table@8.21.2",
         "date-fns@4.1.0"
       ],

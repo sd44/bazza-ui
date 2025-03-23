@@ -1,6 +1,5 @@
 import '@tanstack/table-core'
-import { type RankingInfo, rankItem } from '@tanstack/match-sorter-utils'
-import type { Column, FilterFn, Row, RowData } from '@tanstack/react-table'
+import type { Column, Row, RowData } from '@tanstack/react-table'
 import {
   endOfDay,
   isAfter,
@@ -77,24 +76,6 @@ export function defineMeta<
 //     itemRank: RankingInfo
 //   }
 // }
-
-export const fuzzyFilter: FilterFn<unknown> = (
-  row,
-  columnId,
-  value,
-  addMeta,
-) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  })
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed
-}
 
 /*
  * Represents a possible value for a column property of type 'option' or 'multiOption'.
