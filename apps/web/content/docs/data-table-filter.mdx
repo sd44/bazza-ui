@@ -113,7 +113,7 @@ For `option` and `multiOption` columns:
 
 - You can define the `options` property to provide a list of options ahead of time.
 - The `transformFn` function is used to convert the column value to the native value for the column data type.
-- The `transformOptionFn` function is used to convert the raw option value to a `ColumnOption` object. This is used when we omit a static options list via the `options` property, and instead infer the available options from the column data itself.
+- The `transformOptionFn` function is used to convert the raw option value to a `ColumnOption` object. This is used when you don't provide a static options list via the `options` property, and instead want to infer the available options from the column data itself.
 
 #### Updating your columns
 
