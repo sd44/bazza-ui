@@ -22,14 +22,23 @@ import { Slider } from '@/components/ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { DebouncedInput } from '@/components/debounced-input'
-import { take, uniq } from '@/lib/array'
-import type { ColumnOption, ElementType } from '@/lib/filters'
+import { flatten, take, uniq } from '@/lib/array'
+import type {
+  ColumnOption,
+  ElementType,
+} from '@/lib/filters'
 import {
   type FilterValue,
   determineNewOperator,
   numberFilterDetails,
 } from '@/lib/filters'
-import type { Column, ColumnMeta, RowData, Table } from '@tanstack/react-table'
+import type {
+  Column,
+  ColumnMeta,
+  Row,
+  RowData,
+  Table,
+} from '@tanstack/react-table'
 import { format, isEqual } from 'date-fns'
 import { Ellipsis } from 'lucide-react'
 import { cloneElement, isValidElement, useState } from 'react'
@@ -207,7 +216,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
   const name = columnMeta.displayName.toLowerCase()
   const pluralName = name.endsWith('s') ? `${name}es` : `${name}s`
 
-  const hasOptionIcons = !options.some((o) => !o.icon)
+  const hasOptionIcons = !!columnMeta.options
 
   return (
     <div className="inline-flex items-center gap-0.5">

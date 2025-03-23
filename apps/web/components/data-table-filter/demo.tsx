@@ -28,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTableFilter } from '@/registry/data-table-filter/components/data-table-filter'
-import { filterFn, fuzzyFilter } from '@/registry/data-table-filter/lib/filters'
+import { filterFn } from '@/registry/data-table-filter/lib/filters'
 import { format } from 'date-fns'
 import {
   CalendarArrowDownIcon,
@@ -258,9 +258,9 @@ export default function DataTableDemo({
       columnVisibility,
       rowSelection,
     },
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
+    // filterFns: {
+    //   fuzzy: fuzzyFilter,
+    // },
   })
 
   return (

@@ -3,7 +3,10 @@ import { Separator } from '@/components/ui/separator'
 import { PropertyFilterOperatorController } from '@/components/property-filter-operator'
 import { PropertyFilterSubject } from '@/components/property-filter-subject'
 import { PropertyFilterValueController } from '@/components/property-filter-value'
-import type { ColumnDataType, FilterValue } from '@/lib/filters'
+import type {
+  ColumnDataType,
+  FilterValue,
+} from '@/lib/filters'
 import type { Column, ColumnMeta, Table } from '@tanstack/react-table'
 import { X } from 'lucide-react'
 import { getColumn, getColumnMeta } from '../lib/table'

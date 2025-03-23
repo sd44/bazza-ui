@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { columns } from './columns'
-import { fuzzyFilter } from '@/lib/filters'
+// import { fuzzyFilter } from '@/lib/filters'
 import { ISSUES } from './data'
 import DataTableWrapper from '../shared/data-table'
 
@@ -46,7 +46,7 @@ export default function DataTable() {
       rowSelection,
     },
     filterFns: {
-      fuzzy: fuzzyFilter,
+      // fuzzy: fuzzyFilter,
     },
   })
 

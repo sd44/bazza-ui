@@ -23,7 +23,7 @@ import {
   optionFilterDetails,
   textFilterDetails,
 } from '@/lib/filters'
-import type { Column, ColumnMeta } from '@tanstack/react-table'
+import type { Column, ColumnMeta, Table } from '@tanstack/react-table'
 import { useState } from 'react'
 
 // Renders the filter operator display and menu for a given column filter
