@@ -57,11 +57,11 @@ export default function DataTable() {
 
 #### Preliminaries
 
-Before we continue, let's take a look at the most important definitions we'll be using throughout this guide - `ColumnDataType` and `ColumnMeta`.
+Before we continue, let's take a look at the most important definitions we'll need to know - `ColumnDataType` and `ColumnMeta`.
 
 Whenever you want to filter a column, you need to define what type of data it contains. `ColumnDataType` identifies the types of data we currently support filtering for.
 
-You set the `type` property of the `ColumnMeta` interface (explained below) to one of the following values:
+Set the `type` property of the column meta (explained below) to one of the following values:
 
 ```ts
 export type ColumnDataType =
@@ -115,12 +115,30 @@ For `option` and `multiOption` columns:
 - The `transformFn` function is used to convert the column value to the native value for the column data type.
 - The `transformOptionFn` function is used to convert the raw option value to a `ColumnOption` object. This is used when we omit a static options list via the `options` property, and instead infer the available options from the column data itself.
 
+#### Updating your columns
+
 For each column that you want to be filterable, you need to do two things:
 
 - Use our provided `filterFn()` for filtering the column data.
 - Add the `meta` property using the `defineMeta()` helper function.
 
-For the filter function, we provide one - it is conveniently called `filterFn` and takes a single required argument `type` which is the column data type (i.e. `ColumnDataType`).
+For the filter function, we provide one for you - it is conveniently called `filterFn()` and takes a single argument `type` which is the column data type (i.e. `ColumnDataType`).
+
+For the column meta, we provide a helper function called `defineMeta()` which takes two arguments: **(1)** the property name from your data object, and **(2)** an object containing the column meta.
+
+```ts
+export const columns = [
+  columnHelper.accessor('status', {
+    filterFn: filterFn('option'),
+    meta: defineMeta('status', {
+      displayName: 'Status',
+      type: 'option',
+      icon: CircleDotDashedIcon,
+      options: ISSUE_STATUSES,
+    }),
+  }),
+]
+```
 
 ## API Reference
 
