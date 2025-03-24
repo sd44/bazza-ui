@@ -25,8 +25,7 @@
         "separator",
         "slider",
         "table",
-        "tabs",
-        "tooltip"
+        "tabs"
       ],
       "files": [
         {
@@ -39,10 +38,6 @@
         },
         {
           "path": "registry/data-table-filter/lib/filters.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/data-table-filter/lib/table.ts",
           "type": "registry:lib"
         }
       ]

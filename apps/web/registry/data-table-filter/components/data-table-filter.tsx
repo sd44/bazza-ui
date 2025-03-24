@@ -2,12 +2,6 @@
 
 import type { Column, ColumnMeta, RowData, Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { FilterXIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
@@ -39,8 +33,6 @@ import { X } from 'lucide-react'
 import {
   getColumn,
   getColumnMeta,
-} from '@/registry/data-table-filter/lib/table'
-import {
   type ColumnDataType,
   type FilterValue,
   createNumberRange,
