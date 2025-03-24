@@ -34,34 +34,6 @@
           "type": "registry:component"
         },
         {
-          "path": "registry/data-table-filter/components/debounced-input.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/property-filter-list.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/property-filter-operator.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/property-filter-subject.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/property-filter-value.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/table-filter-actions.tsx",
-          "type": "registry:component"
-        },
-        {
-          "path": "registry/data-table-filter/components/table-filter-menu.tsx",
-          "type": "registry:component"
-        },
-        {
           "path": "registry/data-table-filter/lib/array.ts",
           "type": "registry:lib"
         },
