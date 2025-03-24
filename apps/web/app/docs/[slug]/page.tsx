@@ -9,6 +9,8 @@ import rehypePrettyCode from 'rehype-pretty-code'
 import type { Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
+import rehypeCallouts from 'rehype-callouts'
+import 'rehype-callouts/theme/github'
 import { getTableOfContents } from '@/lib/toc'
 import { DashboardTableOfContents } from '@/components/toc'
 import {
@@ -52,6 +54,7 @@ export default async function Page({
         remarkPlugins: [remarkGfm],
         rehypePlugins: [
           rehypeSlug,
+          rehypeCallouts,
           () => (tree) => {
             visit(tree, (node) => {
               if (node?.type === 'element' && node?.tagName === 'pre') {

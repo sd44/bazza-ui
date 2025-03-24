@@ -25,29 +25,21 @@ declare module '@tanstack/react-table' {
     /* The data type of the column. */
     type: ColumnDataType
 
-    /* Optional */
-    /* Max number for range slider */
-    /* Only works with number type */
-    max?: number
-
     /* An optional list of options for the column. */
     /* This is used for columns with type 'option' or 'multiOption'. */
     /* If the options are known ahead of time, they can be defined here. */
     /* Otherwise, they will be dynamically generated based on the data. */
     options?: ColumnOption[]
 
-    /* An optional function to transform the column value before filtering. */
-    /* This can be used to convert the column value to the column data type's native value. */
-    /* Native types for each data type are defined in the FilterTypes interface. */
-    transformFn?: (
-      value: Exclude<TValue, undefined | null>,
-    ) => FilterTypes[ColumnDataType]
-
     /* An optional function to transform columns with type 'option' or 'multiOption'. */
     /* This is used to convert each raw option into a ColumnOption. */
     transformOptionFn?: (
       value: ElementType<NonNullable<TValue>>,
     ) => ColumnOption
+
+    /* An optional "soft" max for the number range slider. */
+    /* This is used for columns with type 'number'. */
+    max?: number
   }
 }
 
@@ -66,16 +58,6 @@ export function defineMeta<
 ): ColumnMeta<TData, TData[TKey]> {
   return meta
 }
-
-// declare module '@tanstack/table-core' {
-//   interface FilterFns {
-//     fuzzy: FilterFn<unknown>
-//   }
-//
-//   interface FilterMeta {
-//     itemRank: RankingInfo
-//   }
-// }
 
 /*
  * Represents a possible value for a column property of type 'option' or 'multiOption'.
@@ -726,9 +708,6 @@ export function __multiOptionFilterFn<TData>(
 
   const values = uniq(inputData)
   const filterValues = uniq(filterValue.values[0])
-
-  // console.log('column values:', values)
-  // console.log('filter values:', filterValues)
 
   switch (filterValue.operator) {
     case 'include':

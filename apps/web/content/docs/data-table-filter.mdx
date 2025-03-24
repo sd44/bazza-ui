@@ -30,6 +30,86 @@ From the command line, install the component into your project:
 npx shadcn@latest add https://ui.bazza.dev/r/data-table-filter.json
 ```
 
+## Concepts
+
+Let's take a look at the most important concepts for using this component.
+
+### Column data types
+
+Whenever you want to filter a column, you need to define what type of data it contains. `ColumnDataType` identifies the types of data we currently support filtering for.
+
+Set the `type` property of the column meta (explained below) to one of the following values:
+
+```ts
+export type ColumnDataType =
+  | 'text'         /* Text data */
+  | 'number'       /* Numerical data */
+  | 'date'         /* Dates */
+  | 'option'       /* Single-valued option (e.g. status) */
+  | 'multiOption'  /* Multi-valued option (e.g. labels) */
+```
+
+### Column meta
+
+The star of the show is the `ColumnMeta` interface, which defines the metadata shape for a column.
+
+The metadata for each column is configured using the column's `meta` property, which accepts an object of type `ColumnMeta`.
+
+```ts
+export type ElementType<T> = T extends (infer U)[] ? U : T
+
+interface ColumnMeta<TData extends RowData, TValue> {
+  /* The display name of the column. */
+  displayName: string
+  /* The column icon. */
+  icon: LucideIcon
+  /* The data type of the column. */
+  type: ColumnDataType
+  /* An optional list of options for the column. */
+  /* This is used for columns with type 'option' or 'multiOption'. */
+  /* If the options are known ahead of time, they can be defined here. */
+  /* Otherwise, they will be dynamically generated based on the data. */
+  options?: ColumnOption[]
+  /* An optional function to transform columns with type 'option' or 'multiOption'. */
+  /* This is used to convert each raw option into a ColumnOption. */
+  transformOptionFn?: (
+    value: ElementType<NonNullable<TValue>>,
+  ) => ColumnOption
+  /* An optional "soft" max for the range slider. */
+  /* This is used for columns with type 'number'. */
+  max?: number
+}
+```
+
+Let's go through each property in detail:
+
+#### `displayName`
+
+This is the display name for the column. It is used when showing the property in various filter-related interfaces, such as the filter menu.
+
+#### `icon`
+
+This is the icon for the column. It is displayed alongside the `displayName`.
+
+#### `type`
+
+This is the data type of the column. It is used to determine many core functionalities of the data table filter component, such as:
+
+- Rendering the correct user interfaces for modifying the filter values.
+- Determining the correct filter operators for the property.
+
+#### `options`
+
+> [!TIP] Only for `option` and `multiOption` columns.
+
+#### `transformOptionFn`
+
+> [!TIP] Only for `option` and `multiOption` columns.
+
+#### `max`
+
+> [!TIP] Only for `number` columns.
+
 ## Usage
 
 ### Add component
@@ -54,66 +134,6 @@ export default function DataTable() {
 ```
 
 ### Update columns
-
-#### Preliminaries
-
-Before we continue, let's take a look at the most important definitions we'll need to know - `ColumnDataType` and `ColumnMeta`.
-
-Whenever you want to filter a column, you need to define what type of data it contains. `ColumnDataType` identifies the types of data we currently support filtering for.
-
-Set the `type` property of the column meta (explained below) to one of the following values:
-
-```ts
-export type ColumnDataType =
-  | 'text'         /* Text data */
-  | 'number'       /* Numerical data */
-  | 'date'         /* Dates */
-  | 'option'       /* Single-valued option (e.g. status) */
-  | 'multiOption'  /* Multi-valued option (e.g. labels) */
-```
-
-The star of the show is the `ColumnMeta` interface, which defines the metadata for a column.
-
-```ts
-export type ElementType<T> = T extends (infer U)[] ? U : T
-
-interface ColumnMeta<TData extends RowData, TValue> {
-  /* The display name of the column. */
-  displayName: string
-  /* The column icon. */
-  icon: LucideIcon
-  /* The data type of the column. */
-  type: ColumnDataType
-  /* Max number for range slider */
-  /* Only works with number type */
-  max?: number
-  /* This is used for columns with type 'option' or 'multiOption'. */
-  /* If the options are known ahead of time, they can be defined here. */
-  /* Otherwise, they will be dynamically generated based on the data. */
-  options?: ColumnOption[]
-  /* An optional function to transform the column value before filtering. */
-  /* This can be used to convert the column value to the column data type's native value. */
-  /* Native types for each data type are defined in the FilterTypes interface. */
-  transformFn?: (
-    value: Exclude<TValue, undefined | null>,
-  ) => FilterTypes[ColumnDataType]
-  /* An optional function to transform columns with type 'option' or 'multiOption'. */
-  /* This is used to convert each raw option into a ColumnOption. */
-  transformOptionFn?: (
-    value: ElementType<NonNullable<TValue>>,
-  ) => ColumnOption
-}
-```
-
-To keep this concise, I'll skip over the self-explanatory properties: `displayName`, `icon`, and `type`.
-
-If you're dealing with `number` data, you can define a `max` property to set a "soft" maximum value for the range slider.
-
-For `option` and `multiOption` columns:
-
-- You can define the `options` property to provide a list of options ahead of time.
-- The `transformFn` function is used to convert the column value to the native value for the column data type.
-- The `transformOptionFn` function is used to convert the raw option value to a `ColumnOption` object. This is used when you don't provide a static options list via the `options` property, and instead want to infer the available options from the column data itself.
 
 #### Updating your columns
 
@@ -181,7 +201,7 @@ Types, interfaces, and utilities are placed in the `@/lib` directory:
 
 A `PropertyFilterItem` component is composed of the following parts:
 
-- `PropertyFilterSubject` shows the name and *(optionally)* icon of the property being filtered on.
+- `PropertyFilterSubject` shows the name and _(optionally)_ icon of the property being filtered on.
 - `PropertyFilterOperator` shows the operator used to filter on the property.
 - `PropertyFilterValue` shows the actual filter value.
 
@@ -586,7 +606,7 @@ For `option` (and `multiOption`) columns, we need to define the mechanism used f
 
 - **Static**: we know the options at build time
 - **Inferred**: we can infer the options from the data
-- **Remote**: we need to fetch the options from a remote source *(Coming soon)*
+- **Remote**: we need to fetch the options from a remote source _(Coming soon)_
 
 In a simple application, it would make sense to use a <u>static approach</u>:
 
