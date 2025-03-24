@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { FilterX } from 'lucide-react'
+import { FilterXIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   useEffect,
@@ -88,25 +88,14 @@ export function TableFilterActions<TData>({ table }: { table: Table<TData> }) {
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn(
-              'h-7 w-fit border-red-600 px-2 font-normal text-red-600 hover:bg-red-600/10 hover:text-red-600',
-              !hasFilters && 'hidden',
-            )}
-            onClick={clearFilters}
-          >
-            <FilterX className="size-4" />
-            <span className="ml-1 whitespace-nowrap">Clear</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Clear all filters</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Button
+      className={cn('h-7', !hasFilters && 'hidden')}
+      variant="destructive"
+      onClick={clearFilters}
+    >
+      <FilterXIcon />
+      Clear
+    </Button>
   )
 }
 
