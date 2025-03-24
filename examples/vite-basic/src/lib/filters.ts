@@ -10,7 +10,7 @@ import {
 } from 'date-fns'
 import type { LucideIcon } from 'lucide-react'
 import { intersection, uniq } from './array'
-import type { ColumnMeta } from '@tanstack/react-table'
+import type { ColumnMeta, Table } from '@tanstack/react-table'
 
 export type ElementType<T> = T extends (infer U)[] ? U : T
 
@@ -37,7 +37,7 @@ declare module '@tanstack/react-table' {
       value: ElementType<NonNullable<TValue>>,
     ) => ColumnOption
 
-    /* An optional "soft" max for the range slider. */
+    /* An optional "soft" max for the number range slider. */
     /* This is used for columns with type 'number'. */
     max?: number
   }
@@ -881,4 +881,26 @@ export function createNumberRange(values: number[] | undefined) {
   const [min, max] = a < b ? [a, b] : [b, a]
 
   return [min, max]
+}
+
+/*** Table helpers ***/
+
+export function getColumn<TData>(table: Table<TData>, id: string) {
+  const column = table.getColumn(id)
+
+  if (!column) {
+    throw new Error(`Column with id ${id} not found`)
+  }
+
+  return column
+}
+
+export function getColumnMeta<TData>(table: Table<TData>, id: string) {
+  const column = getColumn(table, id)
+
+  if (!column.columnDef.meta) {
+    throw new Error(`Column meta not found for column ${id}`)
+  }
+
+  return column.columnDef.meta
 }
