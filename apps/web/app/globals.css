@@ -140,6 +140,14 @@
     @apply bg-background text-foreground;
   }
 
+  .callout {
+    @apply rounded-sm !py-4;
+
+    &[data-callout="tip"] {
+      @apply bg-green-500/10;
+    }
+  }
+
   html.dark .shiki,
   html.dark .shiki span {
     color: var(--shiki-dark) !important;

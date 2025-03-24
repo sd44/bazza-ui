@@ -49,6 +49,39 @@ export type ColumnDataType =
   | 'multiOption'  /* Multi-valued option (e.g. labels) */
 ```
 
+### Column options
+
+For `option` and `multiOption` columns, we represent each possible option as a `ColumnOption`:
+
+```ts
+export interface ColumnOption {
+  /* The label to display for the option. */
+  label: string
+  /* The internal value of the option. */
+  value: string
+  /* An optional icon to display next to the label. */
+  icon?: React.ReactElement | React.ElementType
+}
+```
+
+#### `label`
+
+This is the label or display name for the option.
+
+#### `value`
+
+This is the interval value for the option and must be unique across all options for a given column.
+
+For an `option` column, the filter value is a `string` which matches the `value` property of chosen column option.
+
+For a `multiOption` column, the filter value is a `string[]` where each array member is the `value` property of the chosen column option.
+
+#### `icon`
+
+Optionally, you can provide an icon to represent the column option.
+
+An icon must be provided for every column option. Otherwise, icons will not be displayed for the column's options.
+
 ### Column meta
 
 The star of the show is the `ColumnMeta` interface, which defines the metadata shape for a column.
@@ -102,13 +135,37 @@ This is the data type of the column. It is used to determine many core functiona
 
 > [!TIP] Only for `option` and `multiOption` columns.
 
+If you have a static list of options for the column, you can pass them as an `ColumnOption[]` object.
+
 #### `transformOptionFn`
 
 > [!TIP] Only for `option` and `multiOption` columns.
 
+This is used when you're inferring the available options for a column using the column data itself.
+
+he `transformOptionFn` will be used to transform each unique column value into a `ColumnOption` object.
+
+Internally, this is used when determining the available options for a column when the `options` property is not defined.
+
+```ts
+/* Get all non-null column values */
+const columnVals = table
+  .getCoreRowModel()
+  .rows.flatMap((r) => r.getValue<TValue>(id))
+  .filter((v): v is NonNullable<TValue> => v !== undefined && v !== null)
+
+/* Keep unique values */
+/* Transform column values into `ColumnOption` objects */
+const options = uniq(columnVals).map(meta.transformOptionFn)
+```
+
 #### `max`
 
 > [!TIP] Only for `number` columns.
+
+Sets a "soft" maximum value for the range slider when filtering on a `number` column.
+
+If omitted, the range slider will compute the maximum value based on the available column data.
 
 ## Usage
 
@@ -159,16 +216,6 @@ export const columns = [
   }),
 ]
 ```
-
-## API Reference
-
-### Data table filter
-
-<TypeTable type={{
-  table: {
-    type: 'Table<TData, TValue>',
-  },
-}} />
 
 ## Overview
 
@@ -225,533 +272,3 @@ We can break down the `PropertyFilterValueController` as an example:
 />
 
 The `PropertyFilterOperatorController` has a similar composition and can be inferred from the above description and image.
-
-## Walkthough
-
-Let's walk through a simple example of how we can use the data table filter component to add client-side filtering to our shadcn/ui data table.
-
-### Scenario
-
-Let's build a data table for an issue tracker. We can define the shape of an `Issue` as follows:
-
-```ts title="types.ts"
-export type IssueStatus = 'backlog' | 'todo' | 'in-progress' | 'done'
-
-export type Issue = {
-  id: string
-  title: string
-  status: IssueStatus
-  dueDate?: Date
-  estimatedHours?: number
-}
-```
-
-### Data
-
-Let's create a mock data set for our data table.
-
-```ts title="data.ts"
-import type { Issue, IssueStatus } from './types'
-
-export const issues = [
-  {
-    id: 'EvxYEpYCwXRS28qENtKtE',
-    title: 'quisque tristique dictum massa',
-    status: 'in-progress',
-    dueDate: '2025-05-16T15:46:47.603Z',
-    estimatedHours: 2,
-  },
-  {
-    id: 'JkWfW8Z_bkDiMk2AwAfSg',
-    title: 'parturient ullamcorper donec est cras do iaculis dapibus',
-    status: 'todo',
-    dueDate: '2025-04-15T15:46:47.603Z',
-    estimatedHours: 9,
-  },
-  {
-    id: '63oRFh0k5rZ-5wWycS4Ck',
-    title: 'egestas consectetur pharetra consequat dignissim cum donec',
-    status: 'done',
-    dueDate: '2025-04-19T15:46:47.603Z',
-    estimatedHours: 14,
-  },
-  {
-    id: 'UwokdPQkVlC61OAvvV8H6',
-    title: 'dictumst dapibus diam cras donec',
-    status: 'todo',
-    dueDate: '2025-04-03T15:46:47.603Z',
-    estimatedHours: 9,
-  },
-  {
-    id: 'PGNcm2npMXXyh6llfm25w',
-    title: 'donec etiam consectetur do euismod',
-    status: 'todo',
-    dueDate: '2025-03-30T15:46:47.603Z',
-    estimatedHours: 1,
-  },
-  {
-    id: '6wal7yhdlic56zuE7HOQb',
-    title: 'dictumst duis cum dui',
-    status: 'todo',
-    dueDate: '2025-04-24T15:46:47.603Z',
-    estimatedHours: 9,
-  },
-  {
-    id: 'rHLiJDYnTjm72kVoAFPbW',
-    title: 'dui egestas consequat commodo',
-    status: 'in-progress',
-    dueDate: '2025-04-15T15:46:47.603Z',
-    estimatedHours: 9,
-  },
-  {
-    id: 'r5lUmLfUR10ZHxqfP98s7',
-    title: 'enim dis cursus eget eiusmod senectus',
-    status: 'in-progress',
-    dueDate: '2025-05-16T15:46:47.603Z',
-    estimatedHours: 2,
-  },
-  {
-    id: 'yDxBhnOMxfttKl5nXQHUq',
-    title: 'do eget cursus dictum',
-    status: 'in-progress',
-    dueDate: '2025-04-17T15:46:47.603Z',
-    estimatedHours: 16,
-  },
-  {
-    id: 'di9ru1E3DFiX3tJrmMWiF',
-    title: 'curabitur dignissim do pharetra',
-    status: 'done',
-    dueDate: '2025-04-17T15:46:47.603Z',
-    estimatedHours: 15,
-  },
-  {
-    id: 'GhBv1YeEfAdUZsw-ZA6Vc',
-    title: 'cras dapibus condimentum penatibus donec',
-    status: 'backlog',
-    dueDate: '2025-04-23T15:46:47.603Z',
-    estimatedHours: 1,
-  },
-  {
-    id: '7oL-iVfN1kggToloI5mMJ',
-    title: 'do eget ultrices laoreet porta cursus',
-    status: 'done',
-    dueDate: '2025-04-25T15:46:47.603Z',
-    estimatedHours: 7,
-  },
-  {
-    id: 'ShPtov3qUGHOeiHNDfG_T',
-    title: 'donec dapibus imperdiet dui egestas',
-    status: 'backlog',
-    dueDate: '2025-04-13T15:46:47.603Z',
-    estimatedHours: 6,
-  },
-  {
-    id: 'zMEgkmYPtZzeWOPl-b8MH',
-    title: 'eiusmod cursus donec egestas tellus eget labore',
-    status: 'done',
-    dueDate: '2025-04-19T15:46:47.603Z',
-    estimatedHours: 6,
-  },
-  {
-    id: '3pkVC03pQXkYJEGJRA5DO',
-    title: 'commodo cras condimentum morbi dolore',
-    status: 'backlog',
-    dueDate: '2025-05-10T15:46:47.603Z',
-    estimatedHours: 13,
-  },
-  {
-    id: 'yqFa8CZUmzVKPTmderJtE',
-    title: 'diam curabitur dapibus molestie cras',
-    status: 'backlog',
-    dueDate: '2025-04-03T15:46:47.603Z',
-    estimatedHours: 13,
-  },
-  {
-    id: 'eksMe8V97HydpGI_x_6Dy',
-    title: 'commodo egestas dis velit integer',
-    status: 'in-progress',
-    dueDate: '2025-04-17T15:46:47.603Z',
-    estimatedHours: 6,
-  },
-  {
-    id: 'xEAVQoAlscGW8g3deVndF',
-    title: 'elementum cursus tincidunt dignissim cum dapibus consectetur diam',
-    status: 'backlog',
-    dueDate: '2025-04-14T15:46:47.603Z',
-    estimatedHours: 3,
-  },
-  {
-    id: 'OnisPidJdleY_yR4QgQAo',
-    title: 'commodo eget donec duis',
-    status: 'done',
-    dueDate: '2025-04-23T15:46:47.603Z',
-    estimatedHours: 3,
-  },
-  {
-    id: 'hhk0R75AcsPpeXc779yaV',
-    title: 'velit euismod volutpat dictum',
-    status: 'backlog',
-    dueDate: '2025-04-11T15:46:47.603Z',
-    estimatedHours: 14,
-  },
-  {
-    id: 'yispLby_ApDvJ2xFyn4xV',
-    title: 'elementum mus etiam curabitur sed',
-    status: 'in-progress',
-    dueDate: '2025-05-16T15:46:47.603Z',
-    estimatedHours: 11,
-  },
-  {
-    id: 'QVYilIPRAQi8NawYb5bWH',
-    title: 'dapibus porttitor dictumst senectus',
-    status: 'done',
-    dueDate: '2025-05-03T15:46:47.603Z',
-    estimatedHours: 12,
-  },
-  {
-    id: 'OxCoTg6pt5KVpV1waLrd-',
-    title: 'etiam do dolore est dolor dapibus',
-    status: 'todo',
-    dueDate: '2025-04-27T15:46:47.603Z',
-    estimatedHours: 13,
-  },
-  {
-    id: 'eRLFToh4g-DG2IBSu8CIN',
-    title: 'eget commodo eiusmod urna do diam fringilla egestas',
-    status: 'backlog',
-    dueDate: '2025-04-26T15:46:47.603Z',
-    estimatedHours: 12,
-  },
-  {
-    id: 'lZEgsow--5Vop79hkOJZH',
-    title: 'curabitur donec commodo dictumst',
-    status: 'done',
-    dueDate: '2025-05-08T15:46:47.603Z',
-    estimatedHours: 5,
-  },
-  {
-    id: 'ciApDG_Y_AxPOfayCvst5',
-    title: 'eiusmod cursus odio dis donec condimentum',
-    status: 'in-progress',
-    dueDate: '2025-04-04T15:46:47.603Z',
-    estimatedHours: 16,
-  },
-  {
-    id: 'dU5rVUeYfIFxSdTYC_Dir',
-    title: 'donec dolore porttitor dignissim curabitur',
-    status: 'in-progress',
-    dueDate: '2025-03-24T15:46:47.603Z',
-    estimatedHours: 14,
-  },
-  {
-    id: '9DLZ--7q2cjSdboAiuPWj',
-    title: 'consectetur dignissim labore convallis dapibus',
-    status: 'backlog',
-    dueDate: '2025-05-04T15:46:47.603Z',
-    estimatedHours: 5,
-  },
-  {
-    id: '1Ub-QWxnHmk81CJIqpZM7',
-    title: 'cum duis euismod dictum',
-    status: 'in-progress',
-    dueDate: '2025-03-30T15:46:47.603Z',
-    estimatedHours: 1,
-  },
-  {
-    id: 'yQPtYSdhBMy2NIiN6GP8k',
-    title: 'eiusmod imperdiet urna porta eros dictum mattis donec',
-    status: 'in-progress',
-    dueDate: '2025-05-13T15:46:47.603Z',
-    estimatedHours: 6,
-  },
-].map((issue) => ({
-  ...issue,
-  status: issue.status as IssueStatus,
-  dueDate: issue.dueDate ? new Date(issue.dueDate) : undefined,
-})) satisfies Issue[]
-```
-
-### Columns
-
-We can start creating the columns for the data table using the `createColumnHelper` function. This ensures we create columns with full type safety.
-
-```ts title="columns.tsx"
-import { createColumnHelper } from '@tanstack/react-table'
-import type { Issue } from './types'
-
-const columnHelper = createColumnHelper<Issue>()
-```
-
-#### Title
-
-Let's start with the `title` column, which displays the issue title.
-
-Let's refer back to the column data types we can pick from:
-
-```ts
-type ColumnDataType =
-  | 'text'
-  | 'number'
-  | 'date'
-  | 'option'
-  | 'multiOption'
-```
-
-It's pretty obvious that we want to use the `text` column data type for this column, so let's go ahead with this:
-
-```ts {2,4,8-19} title="columns.tsx"
-import { createColumnHelper } from '@tanstack/react-table'
-import { defineMeta, filterFn } from '@/lib/filters'
-import type { Issue } from './types'
-import { Heading1Icon } from 'lucide-react'
-
-const columnHelper = createColumnHelper<Issue>()
-
-export const columns = [
-  columnHelper.accessor('title', {
-    id: 'title',
-    header: 'Title',
-    filterFn: filterFn('text'),
-    meta: defineMeta('title', {
-      displayName: 'Title',
-      type: 'text',
-      icon: Heading1Icon,
-    }),
-  }),
-]
-```
-
-Note that we're using the `filterFn` function to define the filter function for this column. We provide this out-of-the-box to ensure your column data is properly filtered. All you have to do is pass in the column data type as an argument.
-
-Additionally, we're using the `defineMeta` helper function when we define the column metadata. This is the recommended way to define the column metadata, as it ensures type safety.
-
-- `displayName` is used when showing the property in various filter-related interfaces, such as the filter menu.
-- `type` is the column data type (as defined above).
-- `icon` is displayed alongside the `displayName`.
-
-#### Due date, estimated hours
-
-Let's get the other "easy" columns, due date and estimated hours, done in one swoop:
-
-```ts {2-6,21-39} title="columns.tsx"
-/* ... */
-import {
-  Heading1Icon,
-  CalendarIcon,
-  ClockIcon,
-} from 'lucide-react'
-
-const columnHelper = createColumnHelper<Issue>()
-
-export const columns = [
-  columnHelper.accessor('title', {
-    id: 'title',
-    header: 'Title',
-    filterFn: filterFn('text'),
-    meta: defineMeta('title', {
-      displayName: 'Title',
-      type: 'text',
-      icon: Heading1Icon,
-    }),
-  }),
-  columnHelper.accessor('dueDate', {
-    id: 'dueDate',
-    header: 'Due Date',
-    filterFn: filterFn('date'),
-    meta: defineMeta('dueDate', {
-      displayName: 'Due Date',
-      type: 'date',
-      icon: CalendarIcon,
-    }),
-  }),
-  columnHelper.accessor('estimatedHours', {
-    id: 'estimatedHours',
-    header: 'Estimated Hours',
-    filterFn: filterFn('number'),
-    meta: defineMeta('estimatedHours', {
-      displayName: 'Estimated Hours',
-      type: 'number',
-      icon: ClockIcon,
-    }),
-  }),
-]
-```
-
-#### Issue status
-
-Now we can tackle one of the more interesting columns, the issue status. We can use the `option` column data type to represent this type of data, where **at most one option** can be selected.
-
-```ts title="columns.tsx" {3,8-17}
-import {
-  /* ... */
-  CircleDotDashedIcon,
-} from 'lucide-react'
-
-export const columns = [
-  /* ...other columns... */
-  columnHelper.accessor('status', {
-    id: 'status',
-    header: 'Status',
-    filterFn: filterFn('option'),
-    meta: defineMeta('status', {
-      displayName: 'Status',
-      type: 'option',
-      icon: CircleDotDashedIcon,
-    }),
-  }),
-]
-```
-
-For `option` (and `multiOption`) columns, we need to define the mechanism used for determining the full set of options:
-
-- **Static**: we know the options at build time
-- **Inferred**: we can infer the options from the data
-- **Remote**: we need to fetch the options from a remote source _(Coming soon)_
-
-In a simple application, it would make sense to use a <u>static approach</u>:
-
-- We can create an `ISSUE_STATUSES` array to define the possible issue statuses.
-- We pass it to the `options` property of the `defineMeta` helper function.
-
-Internally, we map a column's value to a static option using the `ColumnOption`'s `value` field.
-
-```ts title="columns.tsx" {3,4,6,7,10-15,25}
-import {
-  /* ... */
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleDotDashedIcon,
-  CircleCheckIcon,
-  type LucideIcon,
-} from 'lucide-react'
-
-const ISSUE_STATUSES: Array<ColumnOption & { value: IssueStatus }> = [
-  { value: 'backlog', label: 'Backlog', icon: CircleDashedIcon },
-  { value: 'todo', label: 'Todo', icon: CircleDotIcon },
-  { value: 'in-progress', label: 'In Progress', icon: CircleDotDashedIcon },
-  { value: 'done', label: 'Done', icon: CircleCheckIcon },
-] as const
-
-export const columns = [
-  /* ...other columns... */
-  columnHelper.accessor('status', {
-    /* ... */
-    meta: defineMeta('status', {
-      displayName: 'Status',
-      type: 'option',
-      icon: CircleDotDashedIcon,
-      options: ISSUE_STATUSES,
-    }),
-  }),
-]
-```
-
-### Data table
-
-That's it for the column definitions. Now we can move onto creating our data table.
-
-```tsx title="data-table.tsx" showLineNumbers
-'use client'
-
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedMinMaxValues,
-  getFacetedRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { DataTableFilter } from '@/components/data-table-filter'
-import { useState } from 'react'
-
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-}
-
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      columnFilters,
-    },
-  })
-
-  return (
-    <div className="flex flex-col gap-4">
-      <DataTableFilter table={table} />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
-  )
-}
-```
