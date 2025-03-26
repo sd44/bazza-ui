@@ -1,12 +1,14 @@
 <p align="center">
   <a href="https://vercel.com">
     <img src="https://ui.bazza.dev/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fbazzadev.957309d8.png&w=1080&q=75" height="96">
-    <h1 align="center">bazza/ui</h3>
+    <h3 align="center">bazza/ui</h3>
   </a>
 </p>
 
 <p align="center">
-  Open source. Open code. Free to use.
+  Hand-crafted, powerful, modern React components.
+  <br />
+  <b>Open source. Open code. Free to use.</b>
 </p>
 
 <p align="center">
