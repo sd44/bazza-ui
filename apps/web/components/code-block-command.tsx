@@ -98,38 +98,6 @@ export function CodeBlockCommand({
           </TabsList>
         </div>
         {Object.entries(tabs).map(([key, value]) => {
-          if (isComponentInstallCommand) {
-            return (
-              <TabsContent
-                key={key}
-                value={key}
-                className="mt-0 relative flex flex-col py-8 h-full w-full"
-              >
-                <pre className="px-4 py-5 select-none">
-                  <code
-                    className="relative font-mono text-sm leading-none"
-                    data-language="bash"
-                  >
-                    {value}
-                  </code>
-                </pre>
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center gap-2 backdrop-blur-lg *:text-center px-4">
-                  <span className="font-medium md:text-lg">
-                    We're launching soon —{' '}
-                    <XIcon className="inline translate-y-[-1px]" />{' '}
-                    <Link
-                      href="https://x.com/kianbazza"
-                      className="underline underline-offset-2"
-                    >
-                      @kianbazza
-                    </Link>{' '}
-                    for updates.
-                  </span>
-                  <span>You can browse the docs and explore the examples.</span>
-                </div>
-              </TabsContent>
-            )
-          }
           return (
             <TabsContent key={key} value={key} className="mt-0">
               <pre className="px-4 py-5">
@@ -147,7 +115,6 @@ export function CodeBlockCommand({
       <Button
         size="icon"
         variant="ghost"
-        disabled={isComponentInstallCommand}
         className="absolute right-2.5 top-2 z-10 h-6 w-6 dark:text-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-50 hover:bg-neutral-200"
         onClick={copyCommand}
       >
