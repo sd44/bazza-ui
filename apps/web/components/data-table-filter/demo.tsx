@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
 import { DataTableFilter } from '@/registry/data-table-filter/components/data-table-filter'
 import { filterFn } from '@/registry/data-table-filter/lib/filters'
 import { format } from 'date-fns'
@@ -40,6 +39,8 @@ import {
   Heading1Icon,
   UserCheckIcon,
 } from 'lucide-react'
+import { parseAsJson, useQueryState } from 'nuqs'
+import { z } from 'zod'
 import { issues, users } from './data'
 import { type Issue, issueStatuses } from './types'
 
@@ -67,6 +68,7 @@ export const columns: ColumnDef<Issue>[] = [
     enableHiding: false,
   },
   {
+    id: 'status',
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
@@ -92,6 +94,7 @@ export const columns: ColumnDef<Issue>[] = [
     },
   },
   {
+    id: 'title',
     accessorKey: 'title',
     header: 'Title',
     cell: ({ row }) => <div>{row.getValue('title')}</div>,
@@ -103,6 +106,7 @@ export const columns: ColumnDef<Issue>[] = [
     filterFn: filterFn('text'),
   },
   {
+    id: 'assignee',
     accessorKey: 'assignee',
     header: 'Assignee',
     cell: ({ row }) => {
@@ -136,7 +140,7 @@ export const columns: ColumnDef<Issue>[] = [
         value: x.id,
         label: x.name,
         icon: (
-          <Avatar className="size-4">
+          <Avatar key={x.id} className="size-4">
             <AvatarImage src={x.picture} />
             <AvatarFallback>
               {x.name
@@ -151,6 +155,7 @@ export const columns: ColumnDef<Issue>[] = [
     },
   },
   {
+    id: 'estimatedHours',
     accessorKey: 'estimatedHours',
     header: 'Estimated Hours',
     cell: ({ row }) => {
@@ -178,6 +183,7 @@ export const columns: ColumnDef<Issue>[] = [
     filterFn: filterFn('number'),
   },
   {
+    id: 'startDate',
     accessorKey: 'startDate',
     header: 'Start Date',
     cell: ({ row }) => {
@@ -199,6 +205,7 @@ export const columns: ColumnDef<Issue>[] = [
     filterFn: filterFn('date'),
   },
   {
+    id: 'endDate',
     accessorKey: 'endDate',
     header: 'End Date',
     cell: ({ row }) => {
@@ -221,16 +228,52 @@ export const columns: ColumnDef<Issue>[] = [
   },
 ]
 
-interface DataTableDemoProps {
-  hideTable?: boolean
+const dataTableFilterQuerySchema = z
+  .object({
+    id: z.string(),
+    value: z.object({
+      operator: z.string(),
+      values: z.any(),
+    }),
+  })
+  .array()
+  .min(0)
+
+type DataTableFilterQuerySchema = z.infer<typeof dataTableFilterQuerySchema>
+
+function initializeFiltersFromQuery<TData, TValue>(
+  filters: DataTableFilterQuerySchema,
+  columns: ColumnDef<TData, TValue>[],
+) {
+  return filters && filters.length > 0
+    ? filters.map((f) => {
+        const columnMeta = columns.find((c) => c.id === f.id)!.meta!
+
+        const values =
+          columnMeta.type === 'date'
+            ? f.value.values.map((v: string) => new Date(v))
+            : f.value.values
+
+        return {
+          ...f,
+          value: {
+            operator: f.value.operator,
+            values,
+            columnMeta,
+          },
+        }
+      })
+    : []
 }
 
-export default function DataTableDemo({
-  hideTable = false,
-}: DataTableDemoProps) {
+export default function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [queryFilters, setQueryFilters] = useQueryState(
+    'filter',
+    parseAsJson(dataTableFilterQuerySchema.parse).withDefault([]),
+  )
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    () => initializeFiltersFromQuery(queryFilters, columns),
   )
   const [globalFilter, setGlobalFilter] = React.useState('')
   const [columnVisibility, setColumnVisibility] =
@@ -258,22 +301,29 @@ export default function DataTableDemo({
       columnVisibility,
       rowSelection,
     },
-    // filterFns: {
-    //   fuzzy: fuzzyFilter,
-    // },
   })
+
+  React.useEffect(() => {
+    setQueryFilters(
+      columnFilters.map((f) => ({
+        id: f.id,
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        value: { ...(f.value as any), columnMeta: undefined },
+      })),
+    )
+  }, [columnFilters, setQueryFilters])
+
+  React.useEffect(() => {
+    console.log('queryFilters:', queryFilters)
+    console.log('columnFilters:', columnFilters)
+  }, [queryFilters, columnFilters])
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
         <DataTableFilter table={table} />
       </div>
-      <div
-        className={cn(
-          'rounded-md border bg-white dark:bg-inherit',
-          hideTable && 'hidden',
-        )}
-      >
+      <div className="rounded-md border bg-white dark:bg-inherit">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
