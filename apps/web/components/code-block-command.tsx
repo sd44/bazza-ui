@@ -47,6 +47,9 @@ export function CodeBlockCommand({
     }
   }, [__npmCommand__, __pnpmCommand__, __yarnCommand__, __bunCommand__])
 
+  const isComponentInstallCommand =
+    __npmCommand__?.includes('shadcn@latest add')
+
   const copyCommand = React.useCallback(async () => {
     const command = tabs[packageManager]
 
@@ -54,20 +57,17 @@ export function CodeBlockCommand({
       return
     }
 
-    // @ts-ignore
-    await window.stonks.event('Copied component installation command', {
-      packageManager,
-      component: 'data-table-filter',
-    })
-
-    console.log('Copied component installation command', command)
+    if (isComponentInstallCommand) {
+      // @ts-ignore
+      await window.stonks.event('Copied component installation command', {
+        packageManager,
+        component: 'data-table-filter',
+      })
+    }
 
     copyToClipboardWithMeta(command)
     setHasCopied(true)
-  }, [packageManager, tabs])
-
-  const isComponentInstallCommand =
-    __npmCommand__?.includes('shadcn@latest add')
+  }, [packageManager, tabs, isComponentInstallCommand])
 
   return (
     <div className="relative mt-6 max-h-[650px] overflow-x-auto rounded-md bg-white dark:bg-black border border-border">
