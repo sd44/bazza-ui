@@ -1,5 +1,12 @@
 import '@tanstack/table-core'
-import type { Column, Row, RowData } from '@tanstack/react-table'
+import type {
+  AccessorFn,
+  Column,
+  DeepKeys,
+  DeepValue,
+  Row,
+  RowData,
+} from '@tanstack/react-table'
 import type { ColumnMeta, Table } from '@tanstack/react-table'
 import {
   endOfDay,
@@ -43,16 +50,31 @@ declare module '@tanstack/react-table' {
   }
 }
 
+/* TODO: Allow both accessorFn and accessorKey */
 export function defineMeta<
   TData,
-  TKey extends keyof TData,
+  /* Only accessorFn - WORKS */
+  TAccessor extends AccessorFn<TData>,
+  TVal extends ReturnType<TAccessor>,
+  /* Only accessorKey - WORKS */
+  // TAccessor extends DeepKeys<TData>,
+  // TVal extends DeepValue<TData, TAccessor>,
+
+  /* Both accessorKey and accessorFn - BROKEN */
+  /* ISSUE: Won't infer transformOptionFn input type correctly. */
+  // TAccessor extends AccessorFn<TData> | DeepKeys<TData>,
+  // TVal extends TAccessor extends AccessorFn<TData>
+  // ? ReturnType<TAccessor>
+  // : TAccessor extends DeepKeys<TData>
+  // ? DeepValue<TData, TAccessor>
+  // : never,
   TType extends ColumnDataType,
 >(
-  key: TKey,
-  meta: Omit<ColumnMeta<TData, TData[TKey]>, 'type'> & {
+  accessor: TAccessor,
+  meta: Omit<ColumnMeta<TData, TVal>, 'type'> & {
     type: TType
   },
-): ColumnMeta<TData, TData[TKey]> {
+): ColumnMeta<TData, TVal> {
   return meta
 }
 
