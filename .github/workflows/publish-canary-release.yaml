@@ -1,12 +1,14 @@
-name: Merge Queue - Version Bump
+name: Publish canary release
 on:
-  pull_request:
-    branches: [main, canary]
-  merge_group:
-    types: [checks_requested]
+  workflow_dispatch:
+  push:
+    branches: [canary]
+    # paths: ['packages/filters/**']
 
 jobs:
-  version-and-publish:
+  publish-canary:
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -33,6 +35,11 @@ jobs:
       - name: Install dependencies
         run: bun i --frozen-lockfile
 
+      - name: Set up .npmrc for authentication
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Build and publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -43,6 +50,9 @@ jobs:
 
       - name: Commit version changes
         run: |
+          NEXT_VERSION="v$(cat packages/filters/package.json | jq ".version" -r)"
           git add packages/filters/package.json
-          git commit -m "chore(filters): bump version to $(cd packages/filters && node -p 'require(\"./package.json\").version')"
-          git push origin HEAD
+          git commit -m "${NEXT_VERSION}" --no-verify
+          git tag $NEXT_VERSION
+          git push origin HEAD --no-verify
+          git push origin $NEXT_VERSION --no-verify
