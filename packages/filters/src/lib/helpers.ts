@@ -1,5 +1,5 @@
 import { isBefore } from 'date-fns'
-import type { Column, ColumnOption } from '../core/types'
+import type { Column, ColumnOption } from '../core/types.js'
 
 export function getColumn<TData>(columns: Column<TData>[], id: string) {
   const column = columns.find((c) => c.id === id)
@@ -14,14 +14,10 @@ export function getColumn<TData>(columns: Column<TData>[], id: string) {
 export function createNumberFilterValue(
   values: number[] | undefined,
 ): number[] {
-  if (!values || values.length === 0) return []
-  if (values.some((v) => typeof v === 'undefined'))
-    throw new Error('Cannot create number filter value from undefined values')
-  if (values.length === 1) return [values[0]!]
+  if (!values || values.length === 0 || values[0] === undefined) return []
+  if (values.length === 1) return [values[0]]
   if (values.length === 2) return createNumberRange(values)
-  if (values.length > 2) return [values[0]!, values[1]!]
-
-  throw new Error('Cannot create number filter value from undefined values')
+  return [values[0], values[1]!]
 }
 
 export function createDateFilterValue(
@@ -44,8 +40,6 @@ export function createNumberRange(values: number[] | undefined) {
   let a = 0
   let b = 0
 
-  if (values?.some((v) => typeof v === 'undefined'))
-    throw new Error('Cannot create number range from undefined values')
   if (!values || values.length === 0) return [a, b]
   if (values.length === 1) {
     a = values[0]!

@@ -2,8 +2,8 @@
 
 import type React from 'react'
 import { useMemo, useState } from 'react'
-import { createColumns } from '../core/filters'
-import { DEFAULT_OPERATORS, determineNewOperator } from '../core/operators'
+import { createColumns } from '../core/filters.js'
+import { DEFAULT_OPERATORS, determineNewOperator } from '../core/operators.js'
 import type {
   ColumnConfig,
   ColumnDataType,
@@ -15,16 +15,16 @@ import type {
   NumberColumnIds,
   OptionBasedColumnDataType,
   OptionColumnIds,
-} from '../core/types'
-import { uniq } from '../lib/array'
-import { addUniq, removeUniq } from '../lib/array'
+} from '../core/types.js'
+import { uniq } from '../lib/array.js'
+import { addUniq, removeUniq } from '../lib/array.js'
 import {
   createDateFilterValue,
   createNumberFilterValue,
   isColumnOptionArray,
   isColumnOptionMap,
   isMinMaxTuple,
-} from '../lib/helpers'
+} from '../lib/helpers.js'
 
 export interface DataTableFiltersOptions<
   TData,
@@ -141,8 +141,8 @@ export function useDataTableFilters<
                   type: column.type,
                   operator:
                     values.length > 1
-                      ? DEFAULT_OPERATORS[column.type].multiple
-                      : DEFAULT_OPERATORS[column.type].single,
+                      ? DEFAULT_OPERATORS[column.type]!.multiple
+                      : DEFAULT_OPERATORS[column.type]!.single,
                   values,
                 },
               ]
@@ -180,8 +180,8 @@ export function useDataTableFilters<
                   type: column.type,
                   operator:
                     values.length > 1
-                      ? DEFAULT_OPERATORS[column.type].multiple
-                      : DEFAULT_OPERATORS[column.type].single,
+                      ? DEFAULT_OPERATORS[column.type]!.multiple
+                      : DEFAULT_OPERATORS[column.type]!.single,
                   values,
                 },
               ]
@@ -308,8 +308,8 @@ export function useDataTableFilters<
                 type: column.type,
                 operator:
                   values.length > 1
-                    ? DEFAULT_OPERATORS[column.type].multiple
-                    : DEFAULT_OPERATORS[column.type].single,
+                    ? DEFAULT_OPERATORS[column.type]!.multiple
+                    : DEFAULT_OPERATORS[column.type]!.single,
                 values: newValues,
               },
             ]

@@ -1,6 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { cn } from '@/lib/utils'
-import { createColumnConfigHelper } from '@/registry/data-table-filter/core/filters'
+import { createColumnConfigHelper } from '@bazzaui/filters'
 import {
   CalendarArrowUpIcon,
   CircleDotDashedIcon,
@@ -9,6 +7,8 @@ import {
   TagsIcon,
   UserCheckIcon,
 } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
 import { LABEL_STYLES_BG, type TW_COLOR } from './columns'
 import { ISSUE_STATUSES } from './data'
 import type { Issue } from './types'

@@ -1,14 +1,11 @@
 'use client'
 
-import {
-  DataTableFilter,
-  useDataTableFilters,
-} from '@/registry/data-table-filter'
-import type { FiltersState } from '@/registry/data-table-filter/core/types'
+import type { FiltersState } from '@bazzaui/filters'
+import { useDataTableFilters } from '@bazzaui/filters'
 import {
   createTSTColumns,
   createTSTFilters,
-} from '@/registry/data-table-filter/integrations/tanstack-table'
+} from '@bazzaui/filters/tanstack-table'
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -16,6 +13,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
+import { DataTableFilter } from '@/registry/data-table-filter'
 import { tstColumnDefs } from './columns'
 import { ISSUES } from './data'
 import { DataTable } from './data-table'
