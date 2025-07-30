@@ -1,6 +1,6 @@
 {
   "name": "@bazzaui/filters",
-  "version": "0.3.2025073007",
+  "version": "0.3.2025073008",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -58,7 +58,6 @@
   "peerDependencies": {
     "@tanstack/react-table": ">=8.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "lucide-react": ">=0.100.0"
+    "react-dom": ">=18.0.0"
   }
 }
