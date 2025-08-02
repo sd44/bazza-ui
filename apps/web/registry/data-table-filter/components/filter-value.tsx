@@ -5,7 +5,9 @@ import {
   createNumberRange,
   type DataTableFilterActions,
   type FilterModel,
+  type FilterOperators,
   type FilterStrategy,
+  filterTypeOperatorDetails,
   type Locale,
   numberFilterOperators,
   t,
@@ -42,6 +44,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { useDebounceCallback } from '../hooks/use-debounce-callback'
@@ -53,6 +56,7 @@ interface FilterValueProps<TData, TType extends ColumnDataType> {
   actions: DataTableFilterActions
   strategy: FilterStrategy
   locale?: Locale
+  entityName?: string
 }
 
 export const FilterValue = memo(__FilterValue) as typeof __FilterValue
@@ -63,20 +67,32 @@ function __FilterValue<TData, TType extends ColumnDataType>({
   actions,
   strategy,
   locale,
+  entityName,
 }: FilterValueProps<TData, TType>) {
+  // Don't open the value controller for boolean columns
+  // We can toggle the filter operator instead
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+    if (column.type === 'boolean') e.preventDefault()
+  }
+
   return (
     <Popover>
       <PopoverAnchor className="h-full" />
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="m-0 h-full w-fit whitespace-nowrap rounded-none p-0 px-2 text-xs"
+          className={cn(
+            'm-0 h-full w-fit whitespace-nowrap rounded-none p-0 px-2 text-xs',
+            column.type === 'boolean' && 'hover:bg-inherit',
+          )}
+          onClick={handleClick}
         >
           <FilterValueDisplay
             filter={filter}
             column={column}
             actions={actions}
             locale={locale}
+            entityName={entityName}
           />
         </Button>
       </PopoverTrigger>
@@ -102,6 +118,7 @@ interface FilterValueDisplayProps<TData, TType extends ColumnDataType> {
   column: Column<TData, TType>
   actions: DataTableFilterActions
   locale?: Locale
+  entityName?: string
 }
 
 export function FilterValueDisplay<TData, TType extends ColumnDataType>({
@@ -109,6 +126,7 @@ export function FilterValueDisplay<TData, TType extends ColumnDataType>({
   column,
   actions,
   locale = 'en',
+  entityName,
 }: FilterValueDisplayProps<TData, TType>) {
   switch (column.type) {
     case 'option':
@@ -154,6 +172,16 @@ export function FilterValueDisplay<TData, TType extends ColumnDataType>({
           column={column as Column<TData, 'number'>}
           actions={actions}
           locale={locale}
+        />
+      )
+    case 'boolean':
+      return (
+        <FilterValueBooleanDisplay
+          filter={filter as FilterModel<'boolean'>}
+          column={column as Column<TData, 'boolean'>}
+          actions={actions}
+          locale={locale}
+          entityName={entityName}
         />
       )
     default:
@@ -351,6 +379,14 @@ export function FilterValueNumberDisplay<TData>({
 
   const value = filter.values[0]
   return <span className="tabular-nums tracking-tight">{value}</span>
+}
+
+export function FilterValueBooleanDisplay<TData>({
+  filter,
+  column,
+}: FilterValueDisplayProps<TData, 'boolean'>) {
+  if (!filter || filter.values.length === 0) return null
+  return <span>{column.toggledStateName}</span>
 }
 
 /****** Property Filter Value Controller ******/
@@ -851,6 +887,31 @@ export function FilterValueNumberController<TData>({
               </TabsContent>
             </Tabs>
           </div>
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  )
+}
+
+export function FilterValueBooleanController<TData>({
+  filter,
+  column,
+  actions,
+}: FilterValueControllerProps<TData, 'boolean'>) {
+  const handleChange = (value: boolean) => {
+    actions.setFilterValue(column, [value])
+  }
+
+  return (
+    <Command>
+      <CommandList className="max-h-fit">
+        <CommandGroup>
+          <CommandItem>
+            <Switch
+              checked={filter?.values[0] ?? false}
+              onCheckedChange={handleChange}
+            />
+          </CommandItem>
         </CommandGroup>
       </CommandList>
     </Command>
