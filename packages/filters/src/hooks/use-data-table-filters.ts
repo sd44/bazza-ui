@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { createColumns } from '../core/columns/index.js'
 import { DEFAULT_OPERATORS, determineNewOperator } from '../core/operators.js'
 import type {
@@ -15,6 +15,7 @@ import type {
   NumberColumnIds,
   OptionBasedColumnDataType,
   OptionColumnIds,
+  StateUpdaterFn,
 } from '../core/types.js'
 import { addUniq, removeUniq, uniq } from '../lib/array.js'
 import {
@@ -35,7 +36,9 @@ export interface DataTableFiltersOptions<
   columnsConfig: TColumns
   defaultFilters?: FiltersState
   filters?: FiltersState
-  onFiltersChange?: React.Dispatch<React.SetStateAction<FiltersState>>
+  onFiltersChange?:
+    | React.Dispatch<React.SetStateAction<FiltersState>>
+    | StateUpdaterFn<FiltersState>
   options?: Partial<
     Record<OptionColumnIds<TColumns>, ColumnOption[] | undefined>
   >
@@ -74,8 +77,44 @@ export function useDataTableFilters<
     )
   }
 
-  const filters = externalFilters ?? internalFilters
-  const setFilters = onFiltersChange ?? setInternalFilters
+  const isControlled =
+    externalFilters !== undefined && onFiltersChange !== undefined
+
+  const filters = isControlled ? externalFilters : internalFilters
+
+  const setFilters = useCallback(
+    (nextFilters: FiltersState | ((prev: FiltersState) => FiltersState)) => {
+      // Handle change for controlled mode
+      if (isControlled) {
+        // For controlled mode, we need to resolve the function and call the handler
+        const prevFilters = filters
+        const resolvedNextFilters =
+          typeof nextFilters === 'function'
+            ? nextFilters(prevFilters) // If function: call it with prev to get next
+            : nextFilters // If value: use it directly
+
+        // Detect handler type by function length and call appropriately
+        if (onFiltersChange.length <= 1) {
+          // React Dispatch style
+          const dispatchHandler = onFiltersChange as React.Dispatch<
+            React.SetStateAction<FiltersState>
+          >
+          dispatchHandler(resolvedNextFilters)
+        } else {
+          // Custom handler style
+          const customHandler = onFiltersChange as (
+            prev: FiltersState,
+            next: FiltersState,
+          ) => void
+          customHandler(prevFilters, resolvedNextFilters)
+        }
+      } else if (!isControlled) {
+        // Uncontrolled mode: let React handle the function resolution
+        setInternalFilters(nextFilters)
+      }
+    },
+    [filters, isControlled, onFiltersChange],
+  )
 
   // Convert ColumnConfig to Column, applying options and faceted options if provided
   const columns = useMemo(() => {
