@@ -9,9 +9,10 @@ export const inter = Inter({
   display: 'swap',
 })
 
-export const berkeleyMono = localFont({
-  src: '../assets/fonts/berkeley-mono/BerkeleyMono-Variable.woff2',
-  style: 'normal',
-  variable: '--font-berkeley-mono',
+export const berkeleyMono = Inter({
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  subsets: ['latin'],
+  variable: '--font-inter',
   display: 'swap',
 })

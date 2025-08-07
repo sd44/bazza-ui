@@ -38,5 +38,7 @@
   "filters.number.lessThan": "小於",
   "filters.number.lessThanOrEqual": "小於等於",
   "filters.number.isBetween": "介於",
-  "filters.number.isNotBetween": "不介於"
+  "filters.number.isNotBetween": "不介於",
+  "filters.boolean.is": "是",
+  "filters.boolean.isNot": "不是"
 }
